@@ -12,6 +12,7 @@ type ErrorResponse struct {
 
 type Book struct {
 	Authors []Author `json:"authors"`
+	Title   string   `json:"title"`
 }
 
 type Author struct {
@@ -22,7 +23,25 @@ type AuthorResponse struct {
 	FullName string `json:"fuller_name"`
 }
 
+type Work struct {
+	Title    string `json:"title"`
+	Revision int    `json:"revision"`
+	Created  struct {
+		Value string `json:"value"`
+	}
+}
+
+type WorksResponse struct {
+	Entries []Work `json:"entries"`
+}
+
 type EndpointAuthorResponse struct {
 	AuthorName string `json:"author"`
 	Key        string `json:"authorKey"`
+}
+
+type EndpointWorksResponse struct {
+	Name        string `json:"name"`
+	Revision    string `json:"revision"`
+	PublishDate string `json:"publishDate"`
 }
