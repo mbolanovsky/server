@@ -42,6 +42,6 @@ type EndpointAuthorResponse struct {
 
 type EndpointWorksResponse struct {
 	Name        string `json:"name"`
-	Revision    string `json:"revision"`
+	Revision    int    `json:"revision"`
 	PublishDate string `json:"publishDate"`
 }

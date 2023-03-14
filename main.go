@@ -99,7 +99,13 @@ func enpGetWorks(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	buf, err := json.Marshal(works)
+	var worksRes []EndpointWorksResponse
+	for _, item := range works {
+		worksRes = append(worksRes, EndpointWorksResponse{Name: item.Title, Revision: item.Revision, PublishDate: item.Created.Value})
+
+	}
+
+	buf, err := json.Marshal(worksRes)
 	if err != nil {
 		log.Println(err)
 		sendError(w, http.StatusInternalServerError, errors.New("cannot create error"))
