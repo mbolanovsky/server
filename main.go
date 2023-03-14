@@ -81,7 +81,6 @@ func enpGetAuthors(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-
 func enpGetWorks(w http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		sendError(w, http.StatusBadRequest, errors.New("unsupported method. GET method is supported only"))
@@ -94,23 +93,13 @@ func enpGetWorks(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	works, err := getAuthorsKey(authorId)
+	works, err := getAuthorsWorks(authorId)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, errors.New("cannot find this author"))
 		return
 	}
 
-	result := make([]EndpointAuthorResponse, len(authors))
-	for index := range authors {
-		result[index].AuthorName, err = getAuthorsName(authors[index].Key)
-		if err != nil {
-			sendError(w, http.StatusInternalServerError, err)
-			return
-		}
-		result[index].Key = strings.TrimPrefix(authors[index].Key, "/authors/")
-	}
-
-	buf, err := json.Marshal(result)
+	buf, err := json.Marshal(works)
 	if err != nil {
 		log.Println(err)
 		sendError(w, http.StatusInternalServerError, errors.New("cannot create error"))
@@ -154,6 +143,21 @@ func getAuthorsName(key string) (string, error) {
 	author := AuthorResponse{}
 	err = decoder.Decode(&author)
 	return author.FullName, err
+}
+
+func getAuthorsWorks(authorOl string) ([]Work, error) {
+	resp, err := http.Get("https://openlibrary.org/authors/" + authorOl + "/works.json")
+	if err != nil {
+		return []Work{}, err
+	}
+
+	defer close(resp.Body)
+
+	decoder := json.NewDecoder(resp.Body)
+
+	entries := WorksResponse{}
+	err = decoder.Decode(&entries)
+	return entries.Entries, err
 }
 
 func close(reader io.ReadCloser) {
